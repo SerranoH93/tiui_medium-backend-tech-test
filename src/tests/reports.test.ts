@@ -27,6 +27,20 @@ describe('reports API', () => {
     expect(response.body).toHaveProperty('totalCash');
   });
 
-  it.todo('does not include cancelled orders in daily cash report');
-  it.todo('returns the expected total cash for a known seeded date');
+  it('does not include cancelled orders in daily cash report', async () => {
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const response = await request(app).get(`/api/reports/daily-cash?date=${yesterday}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.totalCash).toBe(950);
+  });
+
+  it('returns the expected total cash for a known seeded date', async () => {
+    const today = new Date().toISOString().slice(0, 10);
+    const response = await request(app).get(`/api/reports/daily-cash-expected?date=${today}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.date).toBe(today);
+    expect(response.body.totalCash).toBe(710);
+  });
 });

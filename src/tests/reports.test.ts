@@ -8,7 +8,9 @@ import { seedDatabase } from '../db/seed';
 describe('reports API', () => {
   beforeAll(async () => {
     const migration = fs.readFileSync(path.join(__dirname, '../db/migrations/001_init.sql'), 'utf-8');
+    const migration2 = fs.readFileSync(path.join(__dirname, '../db/migrations/001_init.sql'), 'utf-8');
     await pool.query(migration);
+    await pool.query(migration2);
     await seedDatabase();
   });
 

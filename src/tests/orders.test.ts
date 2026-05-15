@@ -8,7 +8,9 @@ import path from 'node:path';
 describe('orders API', () => {
   beforeAll(async () => {
     const migration = fs.readFileSync(path.join(__dirname, '../db/migrations/001_init.sql'), 'utf-8');
+    const migration2 = fs.readFileSync(path.join(__dirname, '../db/migrations/001_init.sql'), 'utf-8');
     await pool.query(migration);
+    await pool.query(migration2);
     await seedDatabase();
   });
 
@@ -34,7 +36,12 @@ describe('orders API', () => {
     expect(response.body.paid_amount).toBe(100);
   });
 
-  it.todo('does not allow paying a cancelled order');
+  it('does not allow paying a cancelled order', async () => {
+    const response = await request(app).patch('/api/orders/4/pay').send({ amount: 100, source: 'manual' });
+
+    expect(response.status).toBe(400);
+  });
+  
   it.todo('handles orders with null recipient_name');
   it.todo('applies status filter correctly when combined with date filters');
 });

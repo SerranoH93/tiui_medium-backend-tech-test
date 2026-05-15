@@ -58,7 +58,7 @@ router.patch('/:id/pay', async (req, res, next) => {
       return res.status(400).json({ message: 'Invalid payload', issues: error.issues });
     }
 
-    return next(error);
+    return res.status(400).json({ message: error.message });
   }
 });
 

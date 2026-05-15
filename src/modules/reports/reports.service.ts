@@ -4,7 +4,7 @@ export async function getDailyCashReport(date: string) {
   const result = await pool.query(
     `SELECT COALESCE(SUM(paid_amount), 0) AS total_cash
      FROM orders
-     WHERE status IN ('paid', 'cancelled')
+     WHERE status = 'paid'
        AND DATE(created_at) = $1`,
     [date]
   );

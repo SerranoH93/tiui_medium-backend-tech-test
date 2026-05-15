@@ -15,7 +15,7 @@ export type Order = {
 const mapRowToOrder = (row: any): Order => ({
   id: row.id,
   folio: row.folio,
-  recipient_name: row.recipient_name.trim(),
+  recipient_name: row.recipient_name ? row.recipient_name.trim() : '',
   status: row.status,
   total_amount: Number(row.total_amount),
   paid_amount: Number(row.paid_amount),

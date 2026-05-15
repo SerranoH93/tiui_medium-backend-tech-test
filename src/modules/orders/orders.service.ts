@@ -1,6 +1,16 @@
 import { createAuditLog } from '../audit/audit.repository';
 import { getOrderById, listOrders, updateOrderPayment } from './orders.repository';
 
+export class OrderPaymentError extends Error {
+  status: number;
+
+  constructor(message: string, status = 400) {
+    super(message);
+    this.status = status;
+    Object.setPrototypeOf(this, OrderPaymentError.prototype);
+  }
+}
+
 export async function listOrdersService(filters: {
   status?: string;
   from?: string;
@@ -22,8 +32,8 @@ export async function payOrderService(id: number, amount: number, source: string
     return null;
   }
 
-  if (order.status === 'paid') {
-    throw new Error('Order is already paid');
+    if (order.status === 'paid' || order.status === 'cancelled') {
+    throw new OrderPaymentError(`Order is already ${order.status}`);
   }
 
   const nextPaidAmount = order.paid_amount + amount;

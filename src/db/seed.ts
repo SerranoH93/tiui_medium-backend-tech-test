@@ -19,8 +19,7 @@ export async function seedDatabase(): Promise<void> {
   await pool.query(
     `INSERT INTO payment_webhook_logs (provider, provider_event_id, folio, amount, payload)
      VALUES
-      ('paycash', 'evt-dup-001', 'ORD-1003', 200, '{"eventId":"evt-dup-001","folio":"ORD-1003","amount":200}'::jsonb),
-      ('paycash', 'evt-dup-001', 'ORD-1003', 200, '{"eventId":"evt-dup-001","folio":"ORD-1003","amount":200}'::jsonb)`
+      ('paycash', 'evt-dup-001', 'ORD-1003', 200, '{"eventId":"evt-dup-001","folio":"ORD-1003","amount":200}'::jsonb)`      
   );
 
   await pool.query(

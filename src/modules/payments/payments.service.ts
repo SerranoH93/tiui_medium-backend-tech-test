@@ -1,6 +1,7 @@
 import { pool } from '../../db/pool';
 import { createAuditLog } from '../audit/audit.repository';
 import { getOrderByFolio, updateOrderPayment } from '../orders/orders.repository';
+import { insertPaymentWebhookLog } from './payments.repository';
 
 export async function processPaycashWebhook(payload: {
   eventId: string;
@@ -8,15 +9,23 @@ export async function processPaycashWebhook(payload: {
   amount: number;
   paidAt: string;
 }) {
-  await pool.query(
-    `INSERT INTO payment_webhook_logs (provider, provider_event_id, folio, amount, payload)
-     VALUES ($1, $2, $3, $4, $5::jsonb)`,
-    ['paycash', payload.eventId, payload.folio, payload.amount, JSON.stringify(payload)]
-  );
+    const logResult = await insertPaymentWebhookLog({
+    provider_event_id: payload.eventId,
+    folio: payload.folio,
+    amount: payload.amount,
+  });
+  
+  if ( !logResult) {
+    return { applied: false, reason: 'Duplicate event' };
+  }
 
   const order = await getOrderByFolio(payload.folio);
   if (!order) {
     return { applied: false, reason: 'Order not found' };
+  }
+
+    if (order.status === 'paid'|| order.status === 'cancelled') {
+    return { applied: false, reason: `Order already paid ${order.status}`};
   }
 
   const nextPaidAmount = order.paid_amount + payload.amount;
